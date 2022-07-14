@@ -19,7 +19,7 @@ app.conf.task_queues = (
     Queue('celery'),
     Queue('crud-queue'),
     Queue('api-call-queue'),
-    Queue('high-priority-api-call-queue'),
+    Queue('high-priority-api-call-queue'), # used for updating vip tokens 
 )
 
 
@@ -35,7 +35,7 @@ app.conf.task_queues = (
 # every worker is allowed to pick one task at a time before the another is acknowleged
 app.conf.update(worker_prefetch_multiplier = 1,)
 
-# when a worker crashes or gets shutdown the task will be re-queued and another wother picks it up
+# when a worker crashes or gets shutdown the task will be re-queued and another worker picks it up
 app.conf.update(task_acks_late = True,)
 
 # task discovery registers tasks in the config

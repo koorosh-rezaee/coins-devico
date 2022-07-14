@@ -22,6 +22,7 @@ class CoinsContract(Base):
     id = Column(Integer, primary_key=True)
     platform = Column(String, index=True, nullable=False)
     contract_address = Column(String, index=True, nullable=False)
+    decimals = Column(Integer)
     coin_id = Column(Integer, ForeignKey("coins.id"))
     coin = relationship("Coins", back_populates="contract_addresses")
     created = Column(DateTime, server_default=func.now())
