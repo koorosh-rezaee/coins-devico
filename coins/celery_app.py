@@ -13,13 +13,13 @@ app.conf.update(
 )
 
 
-app.control.rate_limit('coins.tasks.api_call_tasks.#', '1/m')
+# app.control.rate_limit('coins.tasks.api_call_tasks.#', '1/m')
 
 app.conf.task_queues = (
     Queue('celery'),
     Queue('crud-queue'),
     Queue('api-call-queue'),
-    Queue('high-priority-queue'),
+    Queue('high-priority-api-call-queue'),
 )
 
 

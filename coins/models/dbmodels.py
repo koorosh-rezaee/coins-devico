@@ -20,10 +20,10 @@ class CoinsContract(Base):
     __tablename__ = "coins_contract"
     
     id = Column(Integer, primary_key=True)
-    platform = Column(String, index=True)
-    contract_address = Column(String, index=True)
+    platform = Column(String, index=True, nullable=False)
+    contract_address = Column(String, index=True, nullable=False)
     coin_id = Column(Integer, ForeignKey("coins.id"))
     coin = relationship("Coins", back_populates="contract_addresses")
     created = Column(DateTime, server_default=func.now())
     
-    UniqueConstraint(coin_id, contract_address, name="uc_coin_id_contract_address")
+    UniqueConstraint(platform, contract_address, name="uc_platform_contract_address")
