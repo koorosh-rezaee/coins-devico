@@ -1,0 +1,3 @@
+celery_broker_url='amqp://admin:thisISrabbitPASS123@172.20.84.120'
+celery_backend_url='redis://172.20.84.120'
+postgresql_url="postgresql://postgres:1@172.20.84.120/coins"
