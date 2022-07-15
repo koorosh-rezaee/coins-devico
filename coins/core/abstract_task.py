@@ -2,6 +2,7 @@
 from celery import Task
 from requests import Session
 from sqlalchemy.orm.scoping import scoped_session
+from redis import Redis
 
 # app imports
 from coins.core.custom_exceptions import SomethingBadHappened
@@ -12,6 +13,14 @@ from coins.core.config import settings
 class DBTask(Task):
         
     _db: scoped_session = None
+    
+    _redis: Redis
+
+    @property
+    def r(self) -> Redis:
+        if self._redis is None:
+            self._redis = Redis()
+        return self._redis           
 
     @property
     def db(self) -> scoped_session:
