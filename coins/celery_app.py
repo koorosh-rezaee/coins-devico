@@ -19,7 +19,8 @@ app.conf.task_queues = (
     Queue('celery'),
     Queue('crud-queue'),
     Queue('api-call-queue'),
-    Queue('high-priority-api-call-queue'), # used for updating vip tokens 
+    Queue('high-priority-api-call-queue'), # used for fetching token prices
+    Queue('high-priority-crud-queue'), # used for updating token prices
 )
 
 

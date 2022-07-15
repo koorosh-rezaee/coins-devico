@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     
     coingecko_rate_limit_per_minute: int = 40 #
     coingecko_api_v3_base_url: str = "https://api.coingecko.com/api/v3"
-        
+    
+    price_watcher_interval_seconds: int = 30 # sends an update task to fetch and update watched_for_price=True coins every x seconds
+      
     class Config:
         env_file = '.env'
         
