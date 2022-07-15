@@ -1,4 +1,5 @@
 from pydantic import AnyUrl, BaseSettings, RedisDsn, AmqpDsn
+from redis import Redis
 
 
 class Settings(BaseSettings):
@@ -23,5 +24,13 @@ class Settings(BaseSettings):
     
 def get_settings():
     return Settings()
+
+def get_redis() -> Redis:
+    red_client = Redis(host=settings.redis_url.host, port=settings.redis_url.port, db=int(settings.redis_url.path.strip('/')), decode_responses=True)
+    try:
+        yield red_client
+    finally:
+        red_client.close()
+
 
 settings = get_settings()
