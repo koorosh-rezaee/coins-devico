@@ -39,9 +39,16 @@ class DBTask(Task):
 class APICallTask(Task):
     
     _db: scoped_session = None
+    _redis: Redis
     
     rate_limit=f'{str(settings.coingecko_rate_limit_per_minute)}/m'
-
+    
+    @property
+    def r(self) -> Redis:
+        if self._redis is None:
+            self._redis = Redis()
+        return self._redis           
+    
     @property
     def db(self) -> scoped_session:
         if self._db is None:

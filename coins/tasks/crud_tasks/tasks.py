@@ -2,6 +2,8 @@
 from celery.utils.log import get_task_logger
 from celery.exceptions import Reject
 
+from coins.services import crud
+
 
 logger = get_task_logger(__name__)
 
@@ -64,5 +66,13 @@ def read_coins_db_id_and_coinid(self: DBTask) -> list:
         raise Reject(e, requeue=False)    
         
         
-
-
+@app.task(base=DBTask, bind=True, queue='crud-queue')
+def set_coin_price_in_redis(self: DBTask, coin_id: str, currency: str, price: float) -> list:
+    
+    try:
+        res = crud.set_prices_in_redis(coin_id=coin_id, currency=currency, price=price, r=self.r)
+        return res
+    except Exception as e:
+        logger.error(f" [x] Could not set the price for coin {coin_id} and currency {currency} with the price {price} because: {e}") 
+            
+        raise Reject(e, requeue=False)   
