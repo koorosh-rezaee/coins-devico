@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 import sentry_sdk
@@ -9,6 +9,7 @@ import coins.controller
 from coins import __version__, controller
 from coins.models.database import Base, engine
 from coins.models.schemas import ResponseModel
+from coins.models.graphql_schemas_and_app import graphql_app
 
 
 # Todo: add sentry.

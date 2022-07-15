@@ -2,8 +2,8 @@ import requests
 import json
 from loguru import logger    
 
-
 from coins.core.config import settings
+from coins.models.choices import VSCurrencies
     
     
 def get_ping():
@@ -72,8 +72,45 @@ def get_coin_data(
             return None
         
     except Exception as e:
-        logger.info(f" [x] Could not get the coin data with id {id} because: {e}")
+        logger.error(f" [x] Could not get the coin data with id {id} because: {e}")
         
         return None    
     
+    
+def get_simple_price(
+                ids: str, 
+                vs_currencies : VSCurrencies = "usd", 
+                include_market_cap: bool = False, 
+                include_24hr_vol: bool = False, 
+                include_24hr_change: bool = False, 
+                include_last_updated_at: bool = False
+    ):
+    
+    simple_price_relative_url = f"/simple/price"
+    coins_absolute_url_path = settings.coingecko_api_v3_base_url + simple_price_relative_url
+    params = {
+        'ids':ids,
+        'vs_currencies':vs_currencies,
+        'include_market_cap':include_market_cap,
+        'include_24hr_vol':include_24hr_vol,
+        'include_24hr_change':include_24hr_change,
+        'include_last_updated_at':include_last_updated_at,
+        }
+    
+    try:
+        res = requests.get(coins_absolute_url_path, params=params)
+        
+        if res.status_code == 200:
+            simple_price_data: list = json.loads(res.content)
+        
+            return simple_price_data
+        else:
+            logger.info(f" [x] Could not get the simple price for coin ids {ids} because: {json.loads(res.content)}")
+            
+            return None
+        
+    except Exception as e:
+        logger.error(f" [x] Could not get the simple price for coin ids {ids} because: {json.loads(res.content)}")
+        
+        return None        
     
