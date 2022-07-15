@@ -34,4 +34,16 @@ def get_price_from_redis(coin_id: str, currency: str, r: Redis):
         else:
             return float(res)
     except Exception as e:
-        logger.error(f" [x] Could not get the price for coin with id {coin_id} and currency {currency} because: {e}")    
+        logger.error(f" [x] Could not get the price for coin with id {coin_id} and currency {currency} because: {e}")
+        
+def get_watch_for_price_coin_ids(db: Session) -> list:
+
+    try:
+        coin_ids: Coins.coin_id = db.query(Coins.coin_id).filter(Coins.watch_for_price == True).all()
+        return [row[0] for row in coin_ids]
+    except Exception as e:
+        logger.error(f" [x] Could not get coins to watch price because: {e}")
+        return []
+    
+    
+    

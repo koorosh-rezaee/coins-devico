@@ -1,4 +1,4 @@
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Any, Optional
 
 from pydantic import BaseModel
 
@@ -13,15 +13,20 @@ class ResponseModel(BaseModel):
 
 
 
+class CoinPrice(BaseModel):
+    class Config:
+        orm_mode = True
+    
+    currency: str
+    price: float
+
+
 class Coin(BaseModel):
     class Config:
         orm_mode = True
 
     coin_id: str = None
-    coin_symbol: str = None
-    coin_name: str = None
+    coin_symbol: Optional[str] = None
+    coin_name: Optional[str] = None
+    prices: Optional[List[CoinPrice]] = []
     
-    def __init(self, id: str, symbol: str, name: str):
-        self.coin_id = id
-        self.coin_symbol = symbol
-        self.coin_name = name

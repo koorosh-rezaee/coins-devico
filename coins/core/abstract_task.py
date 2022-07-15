@@ -13,12 +13,12 @@ from coins.core.config import settings
 class DBTask(Task):
         
     _db: scoped_session = None
-    _redis: Redis
+    _redis: Redis = None
 
     @property
     def r(self) -> Redis:
         if self._redis is None:
-            self._redis = Redis()
+            self._redis = Redis(host=settings.redis_url.host, port=settings.redis_url.port, db=int(settings.redis_url.path.strip('/')), decode_responses=True)
         return self._redis           
 
     @property

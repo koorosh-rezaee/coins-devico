@@ -79,7 +79,7 @@ def get_coin_data(
     
 def get_simple_price(
                 ids: str, 
-                vs_currencies : VSCurrencies = "usd", 
+                vs_currencies : str = "usd,cad", # default to usd and cad
                 include_market_cap: bool = False, 
                 include_24hr_vol: bool = False, 
                 include_24hr_change: bool = False, 
