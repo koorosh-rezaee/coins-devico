@@ -3,31 +3,36 @@ services:
 
   db:
     image: postgres
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: 1
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "$INT:5432:5432"
 
   redis:
-    image: "bitnami/redis:latest"
+    image: "redis:latest"
     container_name: redis
     restart: always
-    command: /opt/bitnami/scripts/redis/run.sh --appendonly no
     environment:
       - "ALLOW_EMPTY_PASSWORD=yes"
     ports:
       - "$INT:6379:6379"
     volumes:
-      - "./redis-persistence:/bitnami/redis/data:rw"
+      - "./redis-persistence:/data"
 
   rabbitmq:
-    image: "rabbitmq:3.8-management-alpine"
+    image: "rabbitmq:3.8.14-management"
     container_name: rabbitmq
+    hostname: 'dev-rabbitmq'
     environment:
       - "RABBITMQ_PASSWORD=thisISrabbitPASS123"
       - "RABBITMQ_USERNAME=admin"
-      - ./config/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      # - ./rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+    volumes:
+      - './rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
     ports:
       # HTTP management UI
       - "$INT:15672:15672"
