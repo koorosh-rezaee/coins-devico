@@ -1,10 +1,16 @@
 # coins-devico
 
-### installation
+### Caution
 
-- `pip3 install -r requirements.txt`
-- `pip3 install -e .`
+***be sure to install docker compose v2 first***
+- `sudo apt-get install docker-compose-plugin`
 
-### Running the web server
-- `python3 coins/web_app.py`
-- `celery -A coins worker -l INFO`
+### running the project
+
+simply use:
+- `./coins-start.sh`
+
+### teardown
+
+use this script:
+- `./coins-stop.sh`
