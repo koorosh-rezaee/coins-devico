@@ -1,9 +1,9 @@
-from pydantic import AnyUrl, BaseSettings, RedisDsn, AmqpDsn
+from pydantic import AnyUrl, BaseSettings, RedisDsn
 from redis import Redis
 
 
 class Settings(BaseSettings):
-    celery_broker_url: AmqpDsn
+    celery_broker_url: AnyUrl
     celery_backend_url: RedisDsn
     
     postgresql_url: AnyUrl = "postgresql://postgres:POSTGRESPASSWORD@localhost/coins"

@@ -38,3 +38,20 @@ services:
       - "$INT:15672:15672"
       # AMQP protocol port
       - "$INT:5672:5672"
+
+  coins:
+    image: devico-coins:latest
+    container_name: coins
+    # command: uvicorn main:app --port 80 --host 0.0.0.0 --workers 1
+    env_file:
+      - ./env/coins.env
+    restart: always
+    ports:
+      - "$INT:80:80"      
+
+  coins-celery:
+    image: devico-coins:latest
+    container_name: coins-celery
+    command: "celery -A coins worker -B -l INFO"
+    env_file:
+      - ./env/coins.env    
