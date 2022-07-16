@@ -24,14 +24,7 @@ async def get_context(
 @strawberry.type
 class User:
     name: str
-    age: int
-
-
-@strawberry.type
-class Query:
-    @strawberry.field
-    def user(self) -> User:
-        return User(name="Patrick", age=100)
+    age: int    
     
 @strawberry.type
 class Subscription:
@@ -41,6 +34,20 @@ class Subscription:
             price = crud_service.get_price_from_redis(coin_id=coin_id, currency=currency, r=info.context['r'])
             yield json.dumps({coin_id: f"{price} {currency}"})
             await asyncio.sleep(2)
+            
+            
+@strawberry.type
+class Query:
+    
+    @strawberry.field
+    def user(self) -> User:
+        return User(name="Patrick", age=100)
+    
+    @strawberry.field
+    def price(self, coin_id: str, currency: str) -> User:
+        return Subscription(coin_id=coin_id, currency=currency)             
+            
+           
     
 schema = strawberry.Schema(query=Query, subscription=Subscription)    
 

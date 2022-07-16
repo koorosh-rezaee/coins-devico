@@ -12,6 +12,8 @@ COPY requirements.txt /app
 USER app
 RUN pip install -r requirements.txt
 RUN pip install pydantic[dotenv]
+RUN pip install 'strawberry-graphql[fastapi]'
+RUN pip install uvicorn[standard]
 
 COPY . /app
 

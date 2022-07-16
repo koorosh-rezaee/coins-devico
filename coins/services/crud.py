@@ -6,6 +6,49 @@ from coins.models.dbmodels import Coins
 
 
 
+def get_coin_ids(db: Session):
+    try:
+        coin_in_dbs : Coins = db.query(Coins.coin_id).all()
+        if coin_in_dbs is not None:
+            
+            formatted_coin_ids_list = [row[0] for row in coin_in_dbs]
+            
+            return formatted_coin_ids_list
+        else:
+            return None
+    except Exception as e:
+        logger.error(f" [x] Could not fetch coin ids: {e}")
+        return False
+
+def get_watched_for_price_coin_ids(db: Session):
+    try:
+        coin_in_dbs : Coins = db.query(Coins.coin_id).filter(Coins.watch_for_price == True).all()
+        if coin_in_dbs is not None:
+            
+            formatted_coin_ids_list = [row[0] for row in coin_in_dbs]
+            
+            return formatted_coin_ids_list
+        else:
+            return None
+    except Exception as e:
+        logger.error(f" [x] Could not fetch coin ids: {e}")
+        return False
+    
+def set_watch_for_price_for_coin_with_coid_id(coin_id: str, db: Session):
+    try:
+        coin_in_db: Coins = db.query(Coins).filter(Coins.coin_id == coin_id).first()
+        if coin_in_db is not None:
+            coin_in_db.watch_for_price = True
+            db.add(coin_in_db)
+            db.commit()
+            
+            return True
+        else:
+            return False
+    except Exception as e:
+        logger.error(f" [x] Could not set watch for price for token with id : {coin_id} because: {e}")
+        return False
+        
 def read_id_and_coin_id_for_all_coins(db: Session):
     try:
         id_coinid_list = db.query(Coins.id, Coins.coin_id).all()
