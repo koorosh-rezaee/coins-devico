@@ -20,7 +20,7 @@ services:
       #POSTGRES_PASSWORD: pgPASS
       #POSTGRES_DB: 'coins'
     volumes:
-      - ./env/postgres_init:/docker-entrypoint-initdb.d/
+      - ./project_config/postgres_init:/docker-entrypoint-initdb.d/
       # - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "$INT:5432:5432"
@@ -43,7 +43,7 @@ services:
     environment:
       - "RABBITMQ_PASSWORD=thisISrabbitPASS123"
       - "RABBITMQ_USERNAME=admin"
-      - ./env/rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./project_config/rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     volumes:
       - './rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
     ports:
@@ -57,7 +57,7 @@ services:
     container_name: coins
     # command: uvicorn main:app --port 80 --host 0.0.0.0 --workers 1
     env_file:
-      - ./env/coins.env
+      - ./project_config/coins.env
     restart: always
     ports:
       - "$INT:80:80"      
@@ -67,4 +67,4 @@ services:
     container_name: coins-celery
     command: "celery -A coins worker -B -l INFO"
     env_file:
-      - ./env/coins.env    
+      - ./project_config/coins.env    
