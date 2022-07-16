@@ -3,12 +3,25 @@ services:
 
   db:
     image: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10    
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: 1
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=password"
+      - "APP_DB_USER=coins"
+      - "APP_DB_PASS=dbpass"
+      - "APP_DB_NAME=coins"
+      #POSTGRES_USER: coins
+      #POSTGRES_PASSWORD: pgPASS
+      #POSTGRES_DB: 'coins'
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./env/postgres_init:/docker-entrypoint-initdb.d/
+      # - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "$INT:5432:5432"
 
@@ -30,7 +43,7 @@ services:
     environment:
       - "RABBITMQ_PASSWORD=thisISrabbitPASS123"
       - "RABBITMQ_USERNAME=admin"
-      # - ./rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./env/rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     volumes:
       - './rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
     ports:
