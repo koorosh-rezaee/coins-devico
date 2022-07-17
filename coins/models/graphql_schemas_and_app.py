@@ -29,10 +29,10 @@ class User:
 @strawberry.type
 class Subscription:
     @strawberry.subscription()
-    async def price(self, coin_id: str, currency: str, info: Info) -> AsyncGenerator[str ,None]:
+    async def price(self, coin_id: str, currency: str, info: Info) -> AsyncGenerator[float ,None]:
         while True:
             price = crud_service.get_price_from_redis(coin_id=coin_id, currency=currency, r=info.context['r'])
-            yield json.dumps({coin_id: f"{price} {currency}"})
+            yield price
             await asyncio.sleep(2)
             
             

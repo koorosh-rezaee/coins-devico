@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     coingecko_api_v3_base_url: str = "https://api.coingecko.com/api/v3"
     
     price_watcher_interval_seconds: int = 30 # sends an update task to fetch and update watched_for_price=True coins every x seconds
+    
+    ethereum_node_http_url: AnyUrl # Ethereum 
+    bsc_node_http_url: AnyUrl      # Binance Smart Chain
       
     class Config:
         env_file = '.env'
