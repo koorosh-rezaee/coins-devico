@@ -5,7 +5,41 @@ from redis import Redis
 from coins.models.dbmodels import Coins
 
 
+# this is a long running task and i save the tasks ids in a redis
+# set so that i could retrieve them in order to check their status 
+# or even force terminating them and removing them from the queue
+def set_update_contracts_task_ids_in_redis(task_ids: list, r: Redis):
+    try:
+        task_ids_set_count = r.sadd("TASKS::fetch_all_coins_contracts_and_update_db", *task_ids)
+        return int(task_ids_set_count)
+    except Exception as e:
+        logger.error(f" [x] could not set TASKS::fetch_all_coins_contracts_and_update_db for {len(task_ids)} task(s) because: {e}")
+        return False
+    
+def get_update_contracts_task_ids_in_redis(r: Redis):
+    try:
+        if bool(r.exists("TASKS::fetch_all_coins_contracts_and_update_db")):
+            task_ids: list = list(r.smembers("TASKS::fetch_all_coins_contracts_and_update_db"))
+            return task_ids
+        else:
+            logger.info(" [x] There is no TASKS::fetch_all_coins_contracts_and_update_db key in redis")
+            return []
+    except Exception as e:
+        logger.error(f" [x] could not set TASKS::fetch_all_coins_contracts_and_update_db for {len(task_ids)} task(s) because: {e}")
+        return False
 
+def delete_update_contracts_task_ids_in_redis(r: Redis):
+    try:
+        if bool(r.exists("TASKS::fetch_all_coins_contracts_and_update_db")):
+            deleted: int = r.delete("TASKS::fetch_all_coins_contracts_and_update_db")
+            return bool(deleted)
+        else:
+            logger.info(" [x] There is no TASKS::fetch_all_coins_contracts_and_update_db key in redis")
+            return True
+    except Exception as e:
+        logger.error(f" [x] could not delete TASKS::fetch_all_coins_contracts_and_update_db : {e}")
+        return False
+    
 def get_coin_ids(db: Session):
     try:
         coin_in_dbs : Coins = db.query(Coins.coin_id).all()
