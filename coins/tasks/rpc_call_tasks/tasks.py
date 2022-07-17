@@ -43,12 +43,12 @@ def fetch_and_update_token_decimals_from_node(self: RpcCallTask, platform: str, 
     
     
 @app.task(base=RpcCallTask, bind=True, queue='node-rpc-call-queue')
-def fetch_and_update_token_decimals_from_node_for_platform(self: RpcCallTask, platform: SupportedPlatforms):
+def fetch_and_update_token_decimals_from_node_for_platform(self: RpcCallTask, platform: str):
     
     coins_contract_db_rows: CoinsContract = self.db.query(CoinsContract).\
-        filter(CoinsContract.platform == platform.value).all()
+        filter(CoinsContract.platform == platform).all()
 
-    token_client: TokensClient = TokensClient(platform=platform.value)
+    token_client: TokensClient = TokensClient(platform=platform)
     
     if not token_client.platform_is_supported:
         logger.error(f" [x] The platform {platform} is not yet supported")

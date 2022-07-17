@@ -72,7 +72,7 @@ def get_coin_data(
             return None
         
     except Exception as e:
-        logger.error(f" [x] Could not get the coin data with id {id} because: {e}")
+        logger.error(f" [x] Could not get the coin data with id {id} because of HITTING THE HARD LIMIT or API BAD RESPONSE: {e}")
         
         return None    
     

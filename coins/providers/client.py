@@ -1,9 +1,9 @@
 from loguru import logger
 
-from .interface import TokensInterface
-from .ethereum import Erc20Token
-from .bsc import Bep20Token
-from .coingecko_supportet_platforms import PLATFORMS
+from coins.providers.interface import TokensInterface
+from coins.providers.ethereum import Erc20Token
+from coins.providers.bsc import Bep20Token
+from coins.providers.coingecko_supportet_platforms import PLATFORMS
 
 
 class TokensClient:
@@ -19,10 +19,10 @@ class TokensClient:
             self.provider = None
             self.platform_is_supported = False
         elif platform == 'ethereum':
-            self.provider = Erc20Token
+            self.provider = Erc20Token()
             self.platform_is_supported = True
         elif platform == 'binance-smart-chain':
-            self.provider = Bep20Token
+            self.provider = Bep20Token()
             self.platform_is_supported = True
         # Todo: implement more providers to support more networks
         else:
