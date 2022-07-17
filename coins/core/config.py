@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     
     price_watcher_interval_seconds: int = 30 # sends an update task to fetch and update watched_for_price=True coins every x seconds
     
+    general_rpc_call_rate_limit_per_minute: int = 1000
     ethereum_node_http_url: AnyUrl # Ethereum 
     bsc_node_http_url: AnyUrl      # Binance Smart Chain
       

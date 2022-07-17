@@ -15,6 +15,26 @@ from coins.models.dbmodels import Coins, CoinsContract
 
 
 
+@app.task(base=DBTask, bind=True, queue='tokens-decimal-crud-queue')
+def update_coin_contract_decmals(self: DBTask, platform: str, contract_address: str, decimals: int):
+    
+    # this should return just one record
+    coin_contract: CoinsContract = self.db.query(CoinsContract).\
+        filter(CoinsContract.platform == platform).\
+            filter(CoinsContract.contract_address == contract_address).first()
+            
+    coin_contract.decimals = decimals
+    try:
+        self.db.add(coin_contract)
+        self.db.commit()
+        return
+    except Exception as e:
+        self.db.rollback()
+        logger.info(f" [x] Could not update the decimals {decimals} for\
+            the coin contract {contract_address} of the platform {platform} because: {e}")
+        raise Reject(e, requeue=False)
+
+
 @app.task(base=DBTask, bind=True, queue='crud-queue')
 def create_new_coin_record(self: DBTask, coin_id: str, coin_symbol: str, coin_name:str):
     some_coin = Coins(
