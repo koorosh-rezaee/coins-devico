@@ -9,13 +9,14 @@ from coins.providers.abi import ERC20_ABI
 class Erc20Token:
     w3: Web3 = None
 
-    def __init__(self, w3: Web3) -> None:
+    def __init__(self) -> None:
         self.w3 = Web3(Web3.HTTPProvider(settings.eth_url))
         
     def get_token_contract_decimals(self, contract_address: str) -> float:        
         try:
+            checksum_address = self.w3.toChecksumAddress(contract_address)
             token_contract = self.w3.eth.contract(
-                address=contract_address,
+                address=checksum_address,
                 abi=ERC20_ABI
             )
             

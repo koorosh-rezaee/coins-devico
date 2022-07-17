@@ -17,8 +17,9 @@ class Bep20Token:
 
     def get_token_contract_decimals(self, contract_address: str) -> float:        
         try:
+            checksum_address = self.w3.toChecksumAddress(contract_address)
             token_contract = self.w3.eth.contract(
-                address=contract_address,
+                address=checksum_address,
                 abi=BEP20_ABI
             )
             
