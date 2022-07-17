@@ -45,10 +45,12 @@ def fetch_all_coins_contracts_and_update_db(self: APICallTask):
         if args_list is None:
             raise Reject(reason="Could not fetch coins id and coin_id from table Coins or there are None", requeue=False)
     
-        results = []
+        task_ids = []
         for args in args_list:
             res = fetch_coin_contracts_and_update_db.apply_async(args=args)
-            results.append(res)
+            task_ids.append(res.id)
+            
+        return task_ids
     
     except Exception as e:
         raise Reject(reason="Could not update token contracts because: {e}", requeue=False)
