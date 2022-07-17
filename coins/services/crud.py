@@ -23,10 +23,10 @@ def get_update_contracts_task_ids_in_redis(r: Redis):
             return task_ids
         else:
             logger.info(" [x] There is no TASKS::fetch_all_coins_contracts_and_update_db key in redis")
-            return []
+            return None
     except Exception as e:
         logger.error(f" [x] could not set TASKS::fetch_all_coins_contracts_and_update_db for {len(task_ids)} task(s) because: {e}")
-        return False
+        return None
 
 def delete_update_contracts_task_ids_in_redis(r: Redis):
     try:
