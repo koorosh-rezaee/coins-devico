@@ -4,9 +4,10 @@ from loguru import logger
 
 from coins.providers.abi import BEP20_ABI
 from coins.core.config import settings
+from .interface import TokensInterface
 
 
-class Bep20Token:
+class Bep20Token(TokensInterface):
     w3: Web3 = None
 
     def __init__(self) -> None:
@@ -15,7 +16,7 @@ class Bep20Token:
         self.w3 = w3
 
 
-    def get_token_contract_decimals(self, contract_address: str) -> float:        
+    def get_token_contract_decimals(self, contract_address: str) -> int:        
         try:
             checksum_address = self.w3.toChecksumAddress(contract_address)
             token_contract = self.w3.eth.contract(
@@ -27,3 +28,4 @@ class Bep20Token:
             return decimals
         except Exception as e:
             logger.error(f" [x] Could not get token decimals on BSC provider with address {contract_address} because: {e}")
+            return None
