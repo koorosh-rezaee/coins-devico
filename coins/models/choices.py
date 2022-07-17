@@ -1,6 +1,11 @@
 import enum
 
 
+class SupportedPlatforms(enum.Enum):
+    Binance_Smart_Chain = "binance-smart-chain"
+    Ethereum = "ethereum"
+    
+
 class VSCurrencies(enum.Enum):
     btc = "btc"
     eth = "eth"

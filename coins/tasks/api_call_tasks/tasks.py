@@ -47,7 +47,7 @@ def fetch_all_coins_contracts_and_update_db(self: APICallTask):
     
         task_ids = []
         for args in args_list:
-            res = fetch_coin_contracts_and_update_db.apply_async(args=args)
+            res = fetch_coin_contract_and_update_db.apply_async(args=args)
             task_ids.append(res.id)
             
         return task_ids
@@ -61,7 +61,7 @@ def fetch_all_coins_contracts_and_update_db(self: APICallTask):
     
     
 @app.task(base=APICallTask, bind=True, queue='api-call-queue')
-def fetch_coin_contracts_and_update_db(self: APICallTask,  coin_db_id: int, coin_id: str):
+def fetch_coin_contract_and_update_db(self: APICallTask,  coin_db_id: int, coin_id: str):
     """Fetching the coin data and adding its data to the db relating to its coins table
     """
     
@@ -87,7 +87,7 @@ def fetch_coin_contracts_and_update_db(self: APICallTask,  coin_db_id: int, coin
     
     
 @app.task(base=APICallTask, bind=True, queue='api-call-queue')
-def fetch_coin_contracts(self: APICallTask,  coin_db_id: int, coin_id: str):
+def fetch_coin_contract(self: APICallTask,  coin_db_id: int, coin_id: str):
     """Fetching the coin data and adding its data to the db relating to its coins table
     """
     
