@@ -21,6 +21,8 @@ app.conf.task_queues = (
     Queue('api-call-queue'),
     Queue('high-priority-api-call-queue'), # used for fetching token prices
     Queue('high-priority-crud-queue'), # used for updating token prices
+    Queue('node-rpc-call-queue'), # used to fetch token decimals from the blockchain
+    Queue('tokens-decimal-crud-queue'), # used to update token decimals on CoinsContract table
 )
 
 

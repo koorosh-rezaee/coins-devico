@@ -33,8 +33,8 @@ services:
       - "ALLOW_EMPTY_PASSWORD=yes"
     ports:
       - "6379:6379"
-    volumes:
-      - "./redis-persistence:/data"
+    # volumes:
+    #   - "./redis-persistence:/data"
 
   rabbitmq:
     image: "rabbitmq:3.8.14-management"
@@ -44,8 +44,8 @@ services:
       - "RABBITMQ_PASSWORD=thisISrabbitPASS123"
       - "RABBITMQ_USERNAME=admin"
       - ./project_config/rabbitmq/config/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-    volumes:
-      - './rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
+    # volumes:
+    #   - './rabbitmq/data/:/var/lib/rabbitmq/mnesia/'
     ports:
       # HTTP management UI
       - "15672:15672"

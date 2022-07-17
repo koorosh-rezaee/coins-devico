@@ -35,6 +35,17 @@ def update_coins_contracts_table(
     
     try:
         
+        # if there is no coin ids in the db first run the fetch coins plan and prompt the user
+        # to wait a second or two and then retry this plan
+        
+        coin_ids = crud_service.get_coin_ids(db=db)
+        
+        if (coin_ids is not None) and (coin_ids != False):
+            if len(coin_ids) == 0:
+                res = fetch_coins_list_and_update_db.delay()
+                
+                return ResponseModel(message=f" [x] There was no coin ids in db, task with id {res.id} enqueued to fetch all the coin ids please retry this plan after coin ids have been fetched.")
+        
         if forced:
             revoked_properly = celery_helper_service.revoke_fetch_all_coins_contracts_and_update_db_tasks(r=r, force=True)
             if revoked_properly:
@@ -53,8 +64,7 @@ def update_coins_contracts_table(
                     return ResponseModel(message=f" Encountered some errors check logs")
                 
                 progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
-                return ResponseModel(message=f" [x] Forced revoked the fetching contracts plan and a number of {number_of_tasks_enqueud}\
-                    tasks enqueued to fetch all the tokens contracts with progress: {progress}")   
+                return ResponseModel(message=f" [x] Forced revoked the fetching contracts plan and a number of {number_of_tasks_enqueud} tasks enqueued to fetch all the tokens contracts with progress: {progress}")   
             
             else:
                 ResponseModel(message=" [x] Could not properly revoke the running plan please check logs")  
@@ -85,8 +95,7 @@ def update_coins_contracts_table(
                         return ResponseModel(message=f" Encountered some errors check logs")        
                 else:
                     progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
-                    return ResponseModel(message=f" [x] A number of {number_of_tasks_enqueud}\
-                        tasks enqueued to fetch all the tokens contracts with progress: {progress}")
+                    return ResponseModel(message=f" [x] A number of {number_of_tasks_enqueud} tasks enqueued to fetch all the tokens contracts with progress: {progress}")
 
             # if there is an error
             elif task_ids == False:
@@ -95,8 +104,7 @@ def update_coins_contracts_table(
             # there is still an in progress plan
             else:
                 progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
-                return ResponseModel(message=f" [x] There is still \
-                    an in progress plan if its stucked you can force to rerun the plan, progress: {progress}")
+                return ResponseModel(message=f" [x] There is still an in progress plan if its stucked you can force to rerun the plan, progress: {progress}")
         
     except Exception as e:
         logger.error(f" [x] something happened during the calling  /update_coins_contracts_table and it was: {e}")
