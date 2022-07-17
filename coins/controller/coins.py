@@ -7,18 +7,35 @@ from sqlalchemy.orm import Session
 from coins.core.config import get_settings, Settings
 from coins.models.database import get_db
 from coins.models.schemas import ResponseModel
-from coins.tasks.api_call_tasks.tasks import fetch_coins_list_and_update_db
+from coins.tasks.api_call_tasks.tasks import fetch_coins_list_and_update_db, fetch_all_coins_contracts_and_update_db
 from coins.services import crud as crud_service
 
 route = APIRouter()
 
-@route.post('/update_coins_list', response_model=ResponseModel)
-def get_coins_and_update_db(
+@route.post('/update_coins_table', response_model=ResponseModel)
+def update_coins_table(
     settings: Settings = Depends(get_settings),
     db: Session = Depends(get_db)
 ):
     
     res = fetch_coins_list_and_update_db.delay()
+    
+    return ResponseModel(message=f" [x] task with id {res.id} enqueued to fetch all the tokens")
+
+
+@route.post('/update_coins_contracts_table', response_model=ResponseModel)
+def update_coins_contracts_table(
+    settings: Settings = Depends(get_settings),
+    db: Session = Depends(get_db)
+):
+    
+    # Todo: check if there are running tasks
+    
+    res = fetch_all_coins_contracts_and_update_db.delay()
+    
+    task_ids = res.get()
+    
+    # Todo: save to redis
     
     return ResponseModel(message=f" [x] task with id {res.id} enqueued to fetch all the tokens")
 
