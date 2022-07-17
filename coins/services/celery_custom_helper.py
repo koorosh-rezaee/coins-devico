@@ -15,6 +15,7 @@ def revoke_task_ids(task_ids: list, force: bool=False):
         return True
     except Exception as e:
         logger.error(f" [x] Could not revoke {len(task_ids)} task(s) because: {e}")
+        return False
 
 
 def get_task_ids_progress(task_ids: list) -> dict:
@@ -52,6 +53,7 @@ def get_progress_fetch_all_coins_contracts_and_update_db(r: Redis):
         # see if there is a redis key for TASK::fetch_all_coins_contracts_and_update_db
         task_ids = crud_service.get_update_contracts_task_ids_in_redis(r=r)
         
+        # if there are no task ids in progress
         if task_ids is None:
             return None
         
@@ -60,7 +62,7 @@ def get_progress_fetch_all_coins_contracts_and_update_db(r: Redis):
         return progress
     except Exception as e:
         logger.error(f" [x] Could not get the progress for fetch_all_coins_contracts_and_update_db tasks because: {e}")
-        return None
+        return False
     
 def revoke_fetch_all_coins_contracts_and_update_db_tasks(r: Redis, force: bool):
     try:
@@ -81,4 +83,4 @@ def revoke_fetch_all_coins_contracts_and_update_db_tasks(r: Redis, force: bool):
         return revoked_task_ids and deleted_key
     except Exception as e:
         logger.error(f" [x] Could not revoke {len(task_ids)} task(s) because: {e}")
-        return None    
+        return False    

@@ -3,12 +3,14 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from loguru import logger
 from sqlalchemy.orm import Session
+from redis import Redis
 
-from coins.core.config import get_settings, Settings
+from coins.core.config import get_redis, get_settings, Settings
 from coins.models.database import get_db
 from coins.models.schemas import ResponseModel
 from coins.tasks.api_call_tasks.tasks import fetch_coins_list_and_update_db, fetch_all_coins_contracts_and_update_db
 from coins.services import crud as crud_service
+from coins.services import celery_custom_helper as celery_helper_service
 
 route = APIRouter()
 
@@ -26,18 +28,79 @@ def update_coins_table(
 @route.post('/update_coins_contracts_table', response_model=ResponseModel)
 def update_coins_contracts_table(
     settings: Settings = Depends(get_settings),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    r: Redis = Depends(get_redis),
+    forced: bool = False
 ):
     
-    # Todo: check if there are running tasks
-    
-    res = fetch_all_coins_contracts_and_update_db.delay()
-    
-    task_ids = res.get()
-    
-    # Todo: save to redis
-    
-    return ResponseModel(message=f" [x] task with id {res.id} enqueued to fetch all the tokens")
+    try:
+        
+        if forced:
+            revoked_properly = celery_helper_service.revoke_fetch_all_coins_contracts_and_update_db_tasks(r=r, force=True)
+            if revoked_properly:
+            
+                res = fetch_all_coins_contracts_and_update_db.delay()
+                
+                # get the task ids to set in redis
+                task_ids = res.get()
+                
+                if (task_ids is None) or (task_ids == False):
+                    return ResponseModel(message=f" Encountered some errors check logs")
+                    
+                number_of_tasks_enqueud = crud_service.set_update_contracts_task_ids_in_redis(task_ids=task_ids, r=r)
+                
+                if not number_of_tasks_enqueud:
+                    return ResponseModel(message=f" Encountered some errors check logs")
+                
+                progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
+                return ResponseModel(message=f" [x] Forced revoked the fetching contracts plan and a number of {number_of_tasks_enqueud}\
+                    tasks enqueued to fetch all the tokens contracts with progress: {progress}")   
+            
+            else:
+                ResponseModel(message=" [x] Could not properly revoke the running plan please check logs")  
+        
+        else:               
+        
+            # check if there are running tasks
+            task_ids = crud_service.get_update_contracts_task_ids_in_redis(r=r)
+            
+            # if there are no in progress tasks to fetch contract addresses then run the plan
+            if task_ids is None:
+                res = fetch_all_coins_contracts_and_update_db.delay()
+                
+                # get the task ids to set in redis
+                task_ids = res.get()
+                
+                number_of_tasks_enqueud = crud_service.set_update_contracts_task_ids_in_redis(task_ids=task_ids, r=r)
+                
+                # if could not keep the track of tasks then just call off the plan and revoke them all
+                if not number_of_tasks_enqueud:
+                    revoked = celery_helper_service.revoke_task_ids(task_ids=task_ids, force=True)
+                    
+                    if revoked:
+                        logger.error(f" [x] could not save the {len(task_ids)} task ids in redis so revoked them all.")
+                        return ResponseModel(message=f" Encountered some errors check logs")        
+                    else:
+                        logger.error(f" [x] could not revoke {len(task_ids)} task ids either!.")
+                        return ResponseModel(message=f" Encountered some errors check logs")        
+                else:
+                    progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
+                    return ResponseModel(message=f" [x] A number of {number_of_tasks_enqueud}\
+                        tasks enqueued to fetch all the tokens contracts with progress: {progress}")
+
+            # if there is an error
+            elif task_ids == False:
+                return ResponseModel(message=f" Encountered some errors check logs")
+            
+            # there is still an in progress plan
+            else:
+                progress = celery_helper_service.get_progress_fetch_all_coins_contracts_and_update_db(r=r)
+                return ResponseModel(message=f" [x] There is still \
+                    an in progress plan if its stucked you can force to rerun the plan, progress: {progress}")
+        
+    except Exception as e:
+        logger.error(f" [x] something happened during the calling  /update_coins_contracts_table and it was: {e}")
+        return ResponseModel(message=f" Encountered some errors check logs")
 
 
 @route.post('/set_watch_for_price', response_model=ResponseModel)
