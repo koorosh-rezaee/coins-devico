@@ -11,7 +11,7 @@ class Erc20Token(TokensInterface):
     w3: Web3 = None
 
     def __init__(self) -> None:
-        self.w3 = Web3(Web3.HTTPProvider(settings.eth_url))
+        self.w3 = Web3(Web3.HTTPProvider(settings.ethereum_node_http_url))
         
     def get_token_contract_decimals(self, contract_address: str) -> int:        
         try:

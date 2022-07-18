@@ -69,6 +69,13 @@ services:
     env_file:
       - ./project_config/coins.env    
 
+  coins-celery-celery-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-celery-queue
+    command: "celery -A coins worker -Q celery -l INFO"
+    env_file:
+      - ./project_config/coins.env        
+
   coins-celery-crud-queue:
     image: devico-coins:latest
     container_name: coins-celery-crud-queue

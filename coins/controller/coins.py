@@ -1,3 +1,4 @@
+from csv import excel
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -8,7 +9,9 @@ from redis import Redis
 from coins.core.config import get_redis, get_settings, Settings
 from coins.models.database import get_db
 from coins.models.schemas import ResponseModel
+from coins.models.choices import SupportedPlatforms
 from coins.tasks.api_call_tasks.tasks import fetch_coins_list_and_update_db, fetch_all_coins_contracts_and_update_db
+from coins.tasks.rpc_call_tasks.tasks import fetch_and_update_token_decimals_from_node_for_platform
 from coins.services import crud as crud_service
 from coins.services import celery_custom_helper as celery_helper_service
 
@@ -23,6 +26,34 @@ def update_coins_table(
     res = fetch_coins_list_and_update_db.delay()
     
     return ResponseModel(message=f" [x] task with id {res.id} enqueued to fetch all the tokens")
+
+
+@route.post('/update_coins_contracts_decimals_column', response_model=ResponseModel)
+def update_coins_contracts_decimals_column(
+    settings: Settings = Depends(get_settings),
+    db: Session = Depends(get_db),
+    r: Redis = Depends(get_redis),
+    forced: bool = False,
+    platform: SupportedPlatforms = SupportedPlatforms.Binance_Smart_Chain
+):
+    
+    try:
+        # todo: force rerunning the plan
+        res = fetch_and_update_token_decimals_from_node_for_platform.delay(platform.value)
+        task_ids = res.get()
+        
+        if len(task_ids) == 0:
+            return ResponseModel(message=f" [x] Did not enqueue any task to update the platform {platform.value}'s decimals.")
+        
+        else:
+            set_in_redis = crud_service.set_update_contracts_decimal_task_ids_in_redis(platform=platform.value, task_ids=task_ids, r=r)
+            if not set_in_redis:
+                # todo: implement the revoke
+                pass
+            return ResponseModel(message=f" [x] A number of {len(task_ids)} tasks enqueued to updated the platform {platform.value}'s decimals.")
+    except Exception as e:
+        logger.error(f" [x] something happened while trying to update {platform.value} decimals, cause: {e}")
+        return ResponseModel(message=f"Something happened during the decimals updating for the platform {platform.value} check logs.")
 
 
 @route.post('/update_coins_contracts_table', response_model=ResponseModel)
