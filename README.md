@@ -102,4 +102,11 @@ because they are enum types
 the supported coin_ids are retrieved from the   /get_coin_ids   api we introduced before
     
  
+## RabbitMQ 
   
+  finally at the <http://localhost:15672> you can see the rabbitmq admin panel with the following credentials:
+  
+  > username: guest
+  > password: guest
+  
+  there you can see if there are running tasks suppose the db updates and contracts related tasks.
