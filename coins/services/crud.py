@@ -1,6 +1,7 @@
 from loguru import logger
 from sqlalchemy.orm import Session
 from redis import Redis
+import typing
 
 from coins.models.dbmodels import Coins
 
@@ -88,6 +89,14 @@ def get_coin_ids(db: Session):
     except Exception as e:
         logger.error(f" [x] Could not fetch coin ids: {e}")
         return False
+    
+def get_coins(coin_ids: typing.List[str] ,db: Session):
+    try:
+        coins : Coins = db.query(Coins).filter(Coins.coin_id.in_(coin_ids)).all()
+        return coins
+    except Exception as e:
+        logger.error(f" [x] Could not fetch coin ids: {e}")
+        return None    
 
 def get_watched_for_price_coin_ids(db: Session):
     try:
