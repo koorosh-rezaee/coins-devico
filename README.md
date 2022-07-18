@@ -61,5 +61,25 @@ a short description about them:
   
   
  ## GraphQL
+    
+ After all of the tokens have been saved to the db along with their contract addresses and decimals and some tokens have been set to watch the prices for
+ you can query the results at this location : <http://localhost:80/graphql>
+    
+ *** 1- subscribing to a tokens price ***
+    > you can run the following code to make a websocket connection with the server and recieve a tokens price every time it gets updated
+    > the rate it gets uptadet depends on the api rate limit wich now is  <coingecko's free rate limit of 50/m> / 2
+        - `subscription{
+              price(coinId: "coin_id", currency: [usd or cad] without quots){
+                coinId
+                currency
+                price
+              }
+            }`
+        
+    >> the supported currencies for this test project are usd and cad make sure not like the "coin_id" dont use the quotes " or ' to set them in the subscription
+    >> because they are enum types
+    
+    
+*** 2- 
   
   
