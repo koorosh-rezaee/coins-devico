@@ -44,5 +44,12 @@ a short description about them:
 >> right now two platforms are supported by this test project *ethereum* and *BSC*
 
 
-
+***4- /set_watch_for_price***
+  > because of the rate limit and the timeout we might hit you should not set all of the coins to watch the prices for
+  > and only set those you are interested in getting an update for
+  >> after setting the coin to be watched for price every project_config>coins.env>price_watcher_interval_seconds seconds
+  >> a task gets enqueued to make an api call to coinsgecko to fetch the latest price for these coins
+  >> and you can fetch them later on by subscribing to a graphql subscription we will introduce later in this document
+  
+ 
 
