@@ -62,9 +62,51 @@ services:
     ports:
       - "80:80"      
 
-  coins-celery:
+  coins-celery-beat:
     image: devico-coins:latest
-    container_name: coins-celery
-    command: "celery -A coins worker -B -l INFO"
+    container_name: coins-celery-beat
+    command: "celery -A coins beat -l INFO"
     env_file:
       - ./project_config/coins.env    
+
+  coins-celery-crud-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-crud-queue
+    command: "celery -A coins worker -Q crud-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env       
+
+  coins-celery-api-call-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-api-call-queue
+    command: "celery -A coins worker -Q api-call-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env        
+
+  coins-celery-hipri-api-call-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-hipri-api-call-queue
+    command: "celery -A coins worker -Q high-priority-api-call-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env       
+
+  coins-celery-hipri-crud-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-hipri-crud-queue
+    command: "celery -A coins worker -Q high-priority-crud-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env           
+      
+  coins-celery-node-rpc-call-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-node-rpc-call-queue
+    command: "celery -A coins worker -Q node-rpc-call-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env         
+
+  coins-celery-tokens-decimal-crud-queue:
+    image: devico-coins:latest
+    container_name: coins-celery-tokens-decimal-crud-queue
+    command: "celery -A coins worker -Q tokens-decimal-crud-queue -l INFO"
+    env_file:
+      - ./project_config/coins.env      
