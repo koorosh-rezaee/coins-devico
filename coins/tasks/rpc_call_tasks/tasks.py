@@ -46,7 +46,7 @@ def fetch_and_update_token_decimals_from_node(self: RpcCallTask, platform: str, 
 def fetch_and_update_token_decimals_from_node_for_platform(self: RpcCallTask, platform: str):
     
     coins_contract_db_rows: CoinsContract = self.db.query(CoinsContract).\
-        filter(CoinsContract.platform == platform).all()
+        filter(CoinsContract.platform == platform).filter(CoinsContract.decimals == None).all()
 
     token_client: TokensClient = TokensClient(platform=platform)
     
