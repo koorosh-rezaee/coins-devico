@@ -118,11 +118,10 @@ the supported coin_ids are retrieved from the   /get_coin_ids   api we introduce
   it could have some missconfigurations you can fix by suppose changing the config at ***project_config>coins.env*** file
   the following are some environment variables you can set:
     
->    coingecko_rate_limit_per_minute: int = 40 #
->    price_watcher_interval_seconds=30                # sends an update task to fetch and update watched_for_price=True coins every x seconds    
->    general_rpc_call_rate_limit_per_minute=1000
->    ethereum_node_http_url=                          # Ethereum 
->    bsc_node_http_url=                               # Binance Smart Chain
+>>     price_watcher_interval_seconds=30                # sends an update task to fetch and update watched_for_price=True coins every x seconds    
+>>     general_rpc_call_rate_limit_per_minute=1000
+>>     ethereum_node_http_url=                          # Ethereum 
+>>     bsc_node_http_url=                               # Binance Smart Chain
   
   
 
