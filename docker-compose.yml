@@ -4,15 +4,15 @@ services:
   db:
     image: postgres
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
       timeout: 45s
       interval: 10s
       retries: 10    
     container_name: postgres
     restart: always
     environment:
-      - "POSTGRES_USER=root"
-      - "POSTGRES_PASSWORD=password"
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=pgpassword"
       - "APP_DB_USER=coins"
       - "APP_DB_PASS=dbpass"
       - "APP_DB_NAME=coins"

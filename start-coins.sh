@@ -1,10 +1,11 @@
 export MYIP=`ifconfig | grep -A 1 eth0 | grep inet | cut -f 2 -d "t" | cut -f 2 -d " "`
 
-sudo docker rmi devico-coins
+docker rmi devico-coins
 
-sudo docker build -t devico-coins .
+docker build -t devico-coins .
 
-sudo docker compose up -d
+docker compose down -v
+docker compose up -d
 
 if [ $MYIP ]; then
     echo "checkout the api docs at: http://$MYIP:8000/docs"

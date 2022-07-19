@@ -1,4 +1,4 @@
-sudo docker compose stop
+docker compose stop
 
-sudo docker compose down -v
+docker compose down -v
 
