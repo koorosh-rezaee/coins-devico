@@ -60,7 +60,7 @@ services:
       - ./project_config/coins.env
     restart: always
     ports:
-      - "80:80"      
+      - "8000:80"      
 
   coins-celery-beat:
     image: devico-coins:latest
